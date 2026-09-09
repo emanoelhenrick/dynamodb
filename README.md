@@ -1,6 +1,6 @@
-# 🛒 API REST Costumer | AWS DynamoDB & Java Spring Data
+# 🛒 API REST Customer | AWS DynamoDB & Java Spring Data
 
-> API REST para gerenciamento de clientes ("costumers"), construída com **Java + Spring Data** e persistência em **AWS
+> API REST para gerenciamento de clientes ("customers"), construída com **Java + Spring Data** e persistência em **AWS
 DynamoDB**. Projeto de estudo focado em boas práticas de back-end: testes automatizados, mutation testing,
 > containerização e integração com serviços AWS.
 
@@ -34,13 +34,14 @@ DynamoDB**. Projeto de estudo focado em boas práticas de back-end: testes autom
 
 ## 📖 Sobre o Projeto
 
-Este projeto implementa uma **API REST de clientes** utilizando o ecossistema Spring (Spring Boot + Spring Data)
-integrado ao **Amazon DynamoDB** como banco de dados NoSQL. O objetivo é servir como estudo prático de:
+Este projeto implementa uma **API REST de clientes** com **Spring Boot** e **Amazon DynamoDB**. O objetivo é servir como estudo prático de:
 
-- Modelagem de dados não-relacional (NoSQL) com DynamoDB;
-- Construção de APIs REST seguindo boas práticas;
-- Qualidade de código através de testes unitários (JUnit 5) e **mutation testing** (Pitest/Stryker);
-- Containerização com Docker para simular o ambiente local do DynamoDB.
+- modelagem de dados NoSQL com DynamoDB;
+- construção de APIs REST seguindo boas práticas;
+- qualidade de código com testes unitários e mutation testing;
+- uso de containerização para simular o ambiente local.
+
+A aplicação expõe endpoints para criar, listar, buscar, atualizar e desativar clientes em uma tabela `customers`.
 
 ## 🏗 Arquitetura
 
@@ -132,9 +133,9 @@ Tabela `customers`, com `id` como chave primária (partition key):
 
 ### Pré-requisitos
 
-- Java 17+
-- Maven
-- Docker (para rodar o DynamoDB local)
+- Java 21+
+- Maven ou wrapper do projeto (`./mvnw`)
+- Docker e Docker Compose
 
 ### Passo a passo
 
@@ -143,44 +144,70 @@ Tabela `customers`, com `id` como chave primária (partition key):
 git clone https://github.com/flaviohnm/dynamodb.git
 cd dynamodb
 
-# 2. Suba o DynamoDB local via Docker
-docker run -p 8000:8000 amazon/dynamodb-local
+# 2. Suba o ambiente local do DynamoDB
+docker compose up -d
 
 # 3. Compile e rode os testes
-mvn clean install
+./mvnw test
 
 # 4. Inicie a aplicação
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-A API ficará disponível em `http://localhost:8080`.
+A API ficará disponível em `http://localhost:9595`.
+
+O DynamoDB local é acessado em `http://localhost:4566` e o painel administrativo fica em `http://localhost:8001`.
+
+> O ambiente local usa um serviço compatível com LocalStack/Floci, com credenciais `test/test` e região `sa-east-1`.
 
 ## 📡 Endpoints da API
 
-| Método   | Rota              | Descrição                     |
-|----------|-------------------|-------------------------------|
-| `POST`   | `/customers`      | Cria um novo cliente          |
-| `GET`    | `/customers`      | Lista todos os clientes       |
-| `GET`    | `/customers/{id}` | Busca um cliente por ID       |
-| `PUT`    | `/customers/{id}` | Atualiza um cliente existente |
-| `DELETE` | `/customers/{id}` | Remove um cliente             |
+| Método | Rota | Descrição | Status esperado |
+|--------|------|-----------|-----------------|
+| `POST` | `/v1/customers` | Cria um novo cliente | `201 Created` |
+| `GET` | `/v1/customers` | Lista todos os clientes | `200 OK` |
+| `GET` | `/v1/customers?companyName=Empresa%20X` | Busca clientes por nome da empresa | `200 OK` |
+| `GET` | `/v1/customers/query?companyName=Empresa%20X` | Busca específica por nome da empresa | `200 OK` |
+| `PATCH` | `/v1/customers` | Atualiza dados de um cliente | `200 OK` |
+| `PATCH` | `/v1/customers/{companyDocumentNumber}` | Desativa um cliente pelo documento | `200 OK` |
 
-> 💡 Ajuste esta tabela conforme os endpoints reais implementados no seu `Controller`.
+### Exemplos de uso
+
+```bash
+# Criar cliente
+curl -X POST http://localhost:9595/v1/customers   -H "Content-Type: application/json"   -d '{
+    "companyName": "Empresa Teste",
+    "companyDocumentNumber": "12345678000199",
+    "phoneNumber": "81999999999"
+  }'
+
+# Listar todos
+curl http://localhost:9595/v1/customers
+
+# Filtrar por nome
+curl "http://localhost:9595/v1/customers?companyName=Empresa%20Teste"
+
+# Buscar por nome da empresa
+curl "http://localhost:9595/v1/customers/query?companyName=Empresa%20Teste"
+```
+
+> Observação: o `GET /v1/customers` tem comportamento condicional:
+> - sem `companyName` → lista todos;
+> - com `companyName` → filtra os resultados.
 
 ## 🧪 Testes
 
-O projeto utiliza **JUnit 5** para testes unitários/integração e **Pitest** para mutation testing, garantindo que os
-testes realmente validem o comportamento do código (e não apenas a cobertura de linhas).
+O projeto utiliza **JUnit 5** para testes unitários/integração e **Pitest** para mutation testing. Isso ajuda a verificar se os testes realmente validam o comportamento da aplicação e não apenas as linhas executadas.
 
 ```bash
 # Rodar testes unitários
-mvn test
+./mvnw test
 
 # Rodar mutation testing
-mvn test-compile org.pitest:pitest-maven:mutationCoverage
+./mvnw test-compile org.pitest:pitest-maven:mutationCoverage
 ```
 
-Os resultados de cobertura (Codecov, a partir do relatório Jacoco) e mutação (Stryker Dashboard) são exibidos nos badges no topo deste README.
+Os resultados de cobertura e mutação podem ser consultados nos relatórios do JaCoCo e no dashboard do Pitest, conforme a configuração do pipeline do GitHub Actions.
 
 ## 🗺 Roadmap
 

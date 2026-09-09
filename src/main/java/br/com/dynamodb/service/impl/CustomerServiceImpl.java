@@ -60,10 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ResourceNotFoundException(CUSTOMER_IS_NOT_EXISTS);
         }
 
-        return mapper
-                .toCustomerDTO(mapper
-                        .optionalToCustomer(repository
-                                .findCompanyNameByQuery(companyName)));
+        return mapper.toCustomerDTO(mapper.optionalToCustomer(recoveredCustomer));
     }
 
     @Override

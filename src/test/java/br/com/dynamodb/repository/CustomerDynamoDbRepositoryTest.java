@@ -25,16 +25,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DynamoDbRepositoryTest {
+public class CustomerDynamoDbRepositoryTest {
 
     @Mock
     private DynamoDbTemplate dynamoDbTemplate;
 
-    private DynamoDbRepository repository;
+    private CustomerDynamoDbRepository repository;
 
     @BeforeEach
     void setup() {
-        repository = new DynamoDbRepository();
+        repository = new CustomerDynamoDbRepository();
         repository.dynamoDbTemplate = dynamoDbTemplate;
     }
 

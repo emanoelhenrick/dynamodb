@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class DynamoDbRepository {
+public class CustomerDynamoDbRepository {
 
     @Autowired
     DynamoDbTemplate dynamoDbTemplate;

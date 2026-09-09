@@ -20,14 +20,17 @@ public class CustomerDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 6318931228062100559L;
+
     @JsonProperty("companyName")
     @NotNull
     @NotBlank
     private String companyName;
+
     @JsonProperty("companyDocumentNumber")
     @NotNull
     @NotBlank
     private String companyDocumentNumber;
+
     @JsonProperty("phoneNumber")
     @NotNull
     @NotBlank

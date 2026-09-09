@@ -15,20 +15,19 @@ DynamoDB**. Projeto de estudo focado em boas práticas de back-end: testes autom
 
 ## 📑 Sumário
 
-- [🛒 API REST Costumer | AWS DynamoDB \& Java Spring Data](#-api-rest-costumer--aws-dynamodb--java-spring-data)
-  - [📑 Sumário](#-sumário)
-  - [📖 Sobre o Projeto](#-sobre-o-projeto)
-  - [🏗 Arquitetura](#-arquitetura)
-  - [🚀💻 Tecnologias \& Ferramentas](#-tecnologias--ferramentas)
-  - [💻 Modelagem no DynamoDB](#-modelagem-no-dynamodb)
-  - [▶️ Como Executar](#️-como-executar)
-    - [Pré-requisitos](#pré-requisitos)
-    - [Passo a passo](#passo-a-passo)
-  - [📡 Endpoints da API](#-endpoints-da-api)
-  - [🧪 Testes](#-testes)
-  - [🗺 Roadmap](#-roadmap)
-  - [✍️ Comentários sobre o projeto](#️-comentários-sobre-o-projeto)
-  - [👨‍🚀 Autor](#-autor)
+- [📖 Sobre o Projeto](#-sobre-o-projeto)
+- [🏗 Arquitetura](#-arquitetura)
+- [🚀💻 Tecnologias \& Ferramentas](#-tecnologias--ferramentas)
+- [💻 Modelagem no DynamoDB](#-modelagem-no-dynamodb)
+- [▶️ Como Executar](#️-como-executar)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Passo a passo](#passo-a-passo)
+- [📡 Endpoints da API (Customers)](#-endpoints-da-api-customers)
+- [🌌 Integração SWAPI (Demonstração e Estudo)](#-integração-swapi-demonstração-e-estudo)
+- [🧪 Testes](#-testes)
+- [🗺 Roadmap](#-roadmap)
+- [✍️ Comentários sobre o projeto](#️-comentários-sobre-o-projeto)
+- [👨‍🚀 Autor](#-autor)
 
 ---
 
@@ -160,7 +159,7 @@ O DynamoDB local é acessado em `http://localhost:4566` e o painel administrativ
 
 > O ambiente local usa um serviço compatível com LocalStack/Floci, com credenciais `test/test` e região `sa-east-1`.
 
-## 📡 Endpoints da API
+## 📡 Endpoints da API (Customers)
 
 | Método | Rota | Descrição | Status esperado |
 |--------|------|-----------|-----------------|
@@ -175,7 +174,9 @@ O DynamoDB local é acessado em `http://localhost:4566` e o painel administrativ
 
 ```bash
 # Criar cliente
-curl -X POST http://localhost:9595/v1/customers   -H "Content-Type: application/json"   -d '{
+curl -X POST http://localhost:9595/v1/customers \
+  -H "Content-Type: application/json" \
+  -d '{
     "companyName": "Empresa Teste",
     "companyDocumentNumber": "12345678000199",
     "phoneNumber": "81999999999"
@@ -194,6 +195,29 @@ curl "http://localhost:9595/v1/customers/query?companyName=Empresa%20Teste"
 > Observação: o `GET /v1/customers` tem comportamento condicional:
 > - sem `companyName` → lista todos;
 > - com `companyName` → filtra os resultados.
+
+## 🌌 Integração SWAPI (Demonstração e Estudo)
+
+Esta integração existe **apenas para demonstração e estudo**. Ela mostra como consumir uma API externa (SWAPI) e persistir dados no DynamoDB.
+
+### Endpoints SWAPI
+
+| Método | Rota | Descrição | Status esperado |
+|--------|------|-----------|-----------------|
+| `GET` | `/swapi/characters/{id}` | Busca personagem diretamente na SWAPI pelo ID | `200 OK` |
+| `POST` | `/swapi/characters/{id}` | Busca na SWAPI e salva o personagem na tabela `characters` do DynamoDB | `200 OK` |
+
+### Exemplo de uso
+
+```bash
+# Consultar personagem na SWAPI (proxy)
+curl http://localhost:9595/swapi/characters/1
+
+# Buscar na SWAPI e salvar no DynamoDB local
+curl -X POST http://localhost:9595/swapi/characters/1
+```
+
+> Importante: quando a SWAPI retorna valores não numéricos (como `unknown`/`n/a`) para `height` e `mass`, a aplicação trata esses campos como `null` antes de persistir no DynamoDB.
 
 ## 🧪 Testes
 

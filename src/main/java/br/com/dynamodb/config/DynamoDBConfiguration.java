@@ -1,6 +1,7 @@
 package br.com.dynamodb.config;
 
 import br.com.dynamodb.model.Customer;
+import br.com.dynamodb.model.SwapiCharacter;
 import io.awspring.cloud.dynamodb.DynamoDbTableNameResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,9 @@ public class DynamoDBConfiguration {
             public <T> String resolve(Class<T> clazz) {
                 if (clazz.equals(Customer.class)) {
                     return "customers";
+                }
+                if (clazz.equals(SwapiCharacter.class)) {
+                    return "characters";
                 }
                 return clazz.getSimpleName().toLowerCase();
             }

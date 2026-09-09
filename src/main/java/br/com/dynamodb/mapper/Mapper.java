@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -150,8 +151,13 @@ public class Mapper {
         if (value == null || value.isBlank()) {
             return null;
         }
+        var normalizedValue = value.trim();
+        var lowercaseValue = normalizedValue.toLowerCase(Locale.ROOT);
+        if ("unknown".equals(lowercaseValue) || "n/a".equals(lowercaseValue)) {
+            return null;
+        }
         try {
-            return Long.parseLong(value);
+            return Long.parseLong(normalizedValue.replace(",", ""));
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Invalid numeric value for " + fieldName + ": " + value, ex);
         }

@@ -4,8 +4,6 @@ import br.com.dynamodb.dto.SwapiCharacterDTO;
 import br.com.dynamodb.mapper.Mapper;
 import br.com.dynamodb.repository.CharacterDynamoDbRepository;
 import br.com.dynamodb.service.SwapiCharacterService;
-import io.awspring.cloud.dynamodb.DynamoDbTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -13,14 +11,13 @@ import org.springframework.web.client.RestClient;
 public class SwapiCharacterServiceImpl implements SwapiCharacterService {
 
     private final RestClient restClient;
+    private final CharacterDynamoDbRepository characterDynamoDbRepository;
 
     public Mapper mapper = new Mapper();
 
-    @Autowired
-    private CharacterDynamoDbRepository characterDynamoDbRepository;
-
-    public SwapiCharacterServiceImpl(RestClient swapiRestClient) {
+    public SwapiCharacterServiceImpl(RestClient swapiRestClient, CharacterDynamoDbRepository characterDynamoDbRepository) {
         this.restClient = swapiRestClient;
+        this.characterDynamoDbRepository = characterDynamoDbRepository;
     }
 
     public SwapiCharacterDTO saveCharacter(Integer charId) {

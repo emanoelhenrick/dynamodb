@@ -1,7 +1,9 @@
 package br.com.dynamodb.mapper;
 
 import br.com.dynamodb.dto.CustomerDTO;
+import br.com.dynamodb.dto.SwapiCharacterDTO;
 import br.com.dynamodb.model.Customer;
+import br.com.dynamodb.model.SwapiCharacter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -314,5 +316,32 @@ public class MapperTest {
         assertThat(resultado.get(0).getCompanyDocumentNumber()).isEqualTo("doc-1");
         assertThat(resultado.get(1).getCompanyName()).isEqualTo("Segunda Empresa");
         assertThat(resultado.get(1).getCompanyDocumentNumber()).isEqualTo("doc-2");
+    }
+
+    // ---------------------------------------------------------------
+    // SwapiCharacter mapping
+    // ---------------------------------------------------------------
+
+    @Test
+    void toCreateSwapiCharacter_deveConverterUnknownParaNullEDefinirIdInteiro() {
+        SwapiCharacterDTO dto = new SwapiCharacterDTO("Luke Skywalker", "unknown", "n/a", "male");
+
+        SwapiCharacter resultado = mapper.toCreateSwapiCharacter(dto, 1);
+
+        assertThat(resultado.getId()).isEqualTo(1);
+        assertThat(resultado.getName()).isEqualTo("Luke Skywalker");
+        assertThat(resultado.getGender()).isEqualTo("male");
+        assertThat(resultado.getHeight()).isNull();
+        assertThat(resultado.getMass()).isNull();
+    }
+
+    @Test
+    void toCreateSwapiCharacter_deveAceitarNumerosComSeparadorMilhar() {
+        SwapiCharacterDTO dto = new SwapiCharacterDTO("Jabba Desilijic Tiure", "175", "1,358", "hermaphrodite");
+
+        SwapiCharacter resultado = mapper.toCreateSwapiCharacter(dto, 16);
+
+        assertThat(resultado.getHeight()).isEqualTo(175L);
+        assertThat(resultado.getMass()).isEqualTo(1358L);
     }
 }

@@ -35,7 +35,7 @@ public class CustomerControllerTest {
     // ---------------------------------------------------------------
 
     @Test
-    void createCustomer_deveRetornarStatusOkComCustomerCriadoPeloService() {
+    void createCustomer_deveRetornarStatusCreatedComCustomerCriadoPeloService() {
         CustomerDTO entrada = CustomerDTO.builder()
                 .companyName("Empresa Teste")
                 .companyDocumentNumber("12345678000199")
@@ -54,17 +54,17 @@ public class CustomerControllerTest {
 
         ResponseEntity<CustomerDTO> resposta = controller.createCustomer(entrada);
 
-        assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(resposta.getBody()).isEqualTo(retornoDoService);
         verify(customerService).saveCustomer(entrada);
     }
 
     // ---------------------------------------------------------------
-    // findCustomerByName
+    // listCustomers
     // ---------------------------------------------------------------
 
     @Test
-    void findCustomerByName_deveRetornarListaRetornadaPeloService() {
+    void listCustomers_comCompanyName_deveRetornarListaRetornadaPeloService() {
         String companyName = "Empresa Teste";
         List<CustomerDTO> lista = List.of(
                 CustomerDTO.builder().companyName(companyName).build()
@@ -72,7 +72,7 @@ public class CustomerControllerTest {
 
         when(customerService.findByCompanyName(companyName)).thenReturn(lista);
 
-        ResponseEntity<List<CustomerDTO>> resposta = controller.findCustomerByName(companyName);
+        ResponseEntity<List<CustomerDTO>> resposta = controller.listCustomers(companyName);
 
         assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(resposta.getBody()).isEqualTo(lista);
@@ -80,12 +80,19 @@ public class CustomerControllerTest {
     }
 
     @Test
-    void findCustomerByName_devePropagarListaVaziaSemAlterarNada() {
-        when(customerService.findByCompanyName("Inexistente")).thenReturn(List.of());
+    void listCustomers_semCompanyName_deveRetornarTodosOsCustomers() {
+        List<CustomerDTO> todos = List.of(
+                CustomerDTO.builder().companyName("Empresa A").build(),
+                CustomerDTO.builder().companyName("Empresa B").build()
+        );
 
-        ResponseEntity<List<CustomerDTO>> resposta = controller.findCustomerByName("Inexistente");
+        when(customerService.findAllCustomers()).thenReturn(todos);
 
-        assertThat(resposta.getBody()).isEmpty();
+        ResponseEntity<List<CustomerDTO>> resposta = controller.listCustomers(null);
+
+        assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(resposta.getBody()).isEqualTo(todos);
+        verify(customerService).findAllCustomers();
     }
 
     // ---------------------------------------------------------------
@@ -104,26 +111,6 @@ public class CustomerControllerTest {
         assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(resposta.getBody()).isEqualTo(dto);
         verify(customerService).findCompanyNameByQuery(companyName);
-    }
-
-    // ---------------------------------------------------------------
-    // Customers (listar todos)
-    // ---------------------------------------------------------------
-
-    @Test
-    void customers_deveRetornarTodosOsCustomersDoService() {
-        List<CustomerDTO> todos = List.of(
-                CustomerDTO.builder().companyName("Empresa A").build(),
-                CustomerDTO.builder().companyName("Empresa B").build()
-        );
-
-        when(customerService.findAllCustomers()).thenReturn(todos);
-
-        ResponseEntity<List<CustomerDTO>> resposta = controller.Customers();
-
-        assertThat(resposta.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(resposta.getBody()).hasSize(2).isEqualTo(todos);
-        verify(customerService).findAllCustomers();
     }
 
     // ---------------------------------------------------------------

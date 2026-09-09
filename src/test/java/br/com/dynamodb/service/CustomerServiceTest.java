@@ -5,7 +5,7 @@ import br.com.dynamodb.exceptions.ResourceNotFoundException;
 import br.com.dynamodb.exceptions.UnprocessableEntityException;
 import br.com.dynamodb.mapper.Mapper;
 import br.com.dynamodb.model.Customer;
-import br.com.dynamodb.repository.DynamoDbRepository;
+import br.com.dynamodb.repository.CustomerDynamoDbRepository;
 import br.com.dynamodb.service.impl.CustomerServiceImpl;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public class CustomerServiceTest {
     CustomerServiceImpl service;
 
     @Mock
-    DynamoDbRepository repository;
+    CustomerDynamoDbRepository repository;
 
     @Mock
     DynamoDbTemplate dynamoDbTemplate;

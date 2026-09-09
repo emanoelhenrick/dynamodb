@@ -4,7 +4,7 @@ import br.com.dynamodb.dto.CustomerDTO;
 import br.com.dynamodb.exceptions.ResourceNotFoundException;
 import br.com.dynamodb.exceptions.UnprocessableEntityException;
 import br.com.dynamodb.mapper.Mapper;
-import br.com.dynamodb.repository.DynamoDbRepository;
+import br.com.dynamodb.repository.CustomerDynamoDbRepository;
 import br.com.dynamodb.service.CustomerService;
 import io.awspring.cloud.dynamodb.DynamoDbTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
-    private DynamoDbRepository repository;
+    private CustomerDynamoDbRepository repository;
 
     @Autowired
     DynamoDbTemplate dynamoDbTemplate;
@@ -60,10 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ResourceNotFoundException(CUSTOMER_IS_NOT_EXISTS);
         }
 
-        return mapper
-                .toCustomerDTO(mapper
-                        .optionalToCustomer(repository
-                                .findCompanyNameByQuery(companyName)));
+        return mapper.toCustomerDTO(mapper.optionalToCustomer(recoveredCustomer));
     }
 
     @Override

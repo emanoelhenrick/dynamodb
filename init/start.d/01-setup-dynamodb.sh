@@ -8,6 +8,8 @@ FOLDER_PATH=${FOLDER_PATH:-"/etc/files/database"}
 TABLE_NAME=${1:-"customers"}
 CREATE_FILE=${2:-"${FOLDER_PATH}/customerTable.json"}
 PUT_FILE=${3:-"${FOLDER_PATH}/putCustomers.json"}
+CHARACTER_TABLE_NAME=${4:-"characters"}
+CHARACTER_CREATE_FILE=${5:-"${FOLDER_PATH}/characterTable.json"}
 
 # ------------------------------------------------------------------------------
 # Funções
@@ -58,3 +60,5 @@ create_dynamodb "${TABLE_NAME}" "${CREATE_FILE}"
 putItems_dynamodb "${PUT_FILE}"
 
 update_ttl_dynamodb "${TABLE_NAME}" "expiration_date"
+
+create_dynamodb "${CHARACTER_TABLE_NAME}" "${CHARACTER_CREATE_FILE}"

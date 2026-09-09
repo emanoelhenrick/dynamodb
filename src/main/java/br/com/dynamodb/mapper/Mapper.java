@@ -1,7 +1,9 @@
 package br.com.dynamodb.mapper;
 
 import br.com.dynamodb.dto.CustomerDTO;
+import br.com.dynamodb.dto.SwapiCharacterDTO;
 import br.com.dynamodb.model.Customer;
+import br.com.dynamodb.model.SwapiCharacter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -115,5 +117,43 @@ public class Mapper {
                 .iterator()
                 .forEachRemaining(customer -> CustomersDTO.add(toCustomerDTO(customer)));
         return CustomersDTO;
+    }
+
+    public SwapiCharacter toCreateSwapiCharacter(SwapiCharacterDTO swapiCharacterDTO, Integer id) {
+        return SwapiCharacter.builder()
+                .id(id)
+                .name(swapiCharacterDTO.name())
+                .height(parseToLong(swapiCharacterDTO.height(), "height"))
+                .mass(parseToLong(swapiCharacterDTO.mass(), "mass"))
+                .gender(swapiCharacterDTO.gender())
+                .build();
+    }
+
+    public SwapiCharacterDTO toSwapiCharacterDTO(SwapiCharacter swapiCharacter) {
+        return new SwapiCharacterDTO(
+                swapiCharacter.getName(),
+                swapiCharacter.getHeight() != null ? swapiCharacter.getHeight().toString() : null,
+                swapiCharacter.getMass() != null ? swapiCharacter.getMass().toString() : null,
+                swapiCharacter.getGender()
+        );
+    }
+
+    public List<SwapiCharacterDTO> toSwapiCharacterDTOList(List<SwapiCharacter> swapiCharacters) {
+        List<SwapiCharacterDTO> swapiCharacterDTOList = new ArrayList<>();
+        swapiCharacters
+                .iterator()
+                .forEachRemaining(character -> swapiCharacterDTOList.add(toSwapiCharacterDTO(character)));
+        return swapiCharacterDTOList;
+    }
+
+    private Long parseToLong(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid numeric value for " + fieldName + ": " + value, ex);
+        }
     }
 }

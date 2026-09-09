@@ -12,14 +12,6 @@
     {
       "AttributeName": "gender",
       "AttributeType": "S"
-    },
-    {
-      "AttributeName": "height",
-      "AttributeType": "N"
-    },
-    {
-      "AttributeName": "mass",
-      "AttributeType": "N"
     }
   ],
   "KeySchema": [

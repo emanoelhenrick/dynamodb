@@ -1,4 +1,5 @@
 #!/bin/bash -x
+set -euo pipefail
 
 # 1. Definição do comando AWS com o endpoint do Floci
 AWS_CMD="aws --endpoint-url=http://localhost:4566 --region sa-east-1"
@@ -15,9 +16,20 @@ CHARACTER_CREATE_FILE=${5:-"${FOLDER_PATH}/characterTable.json"}
 # Funções
 # ------------------------------------------------------------------------------
 
+table_exists(){
+  local table_name=$1
+
+  ${AWS_CMD} dynamodb describe-table --table-name "${table_name}" >/dev/null 2>&1
+}
+
 create_dynamodb(){
   local table_name=$1
   local json_file=$2
+
+  if table_exists "${table_name}"; then
+    echo "ℹ️ Tabela '${table_name}' já existe; ignorando criação."
+    return 0
+  fi
 
   echo "🛠️ Criando tabela '${table_name}' a partir de: ${json_file}..."
   ${AWS_CMD} dynamodb create-table \
@@ -35,7 +47,7 @@ putItems_dynamodb(){
   echo "📦 Inserindo itens na tabela a partir de: ${json_file}..."
   ${AWS_CMD} dynamodb batch-write-item \
     --request-items "file://${json_file}"
-  
+
   echo "✅ Carga de dados finalizada com sucesso!"
 }
 
@@ -43,11 +55,16 @@ update_ttl_dynamodb(){
   local table_name=$1
   local ttl_attribute=${2:-"expiration_date"}
 
+  if ! table_exists "${table_name}"; then
+    echo "⚠️ Tabela '${table_name}' não existe; pulando TTL."
+    return 0
+  fi
+
   echo "⚙️ Configurando TTL no atributo '${ttl_attribute}' para a tabela '${table_name}'..."
   ${AWS_CMD} dynamodb update-time-to-live \
     --table-name "${table_name}" \
     --time-to-live-specification "Enabled=true, AttributeName=${ttl_attribute}"
-  
+
   echo "✅ TTL configurado com sucesso!"
 }
 

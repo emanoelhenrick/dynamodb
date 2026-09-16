@@ -155,7 +155,9 @@ docker compose up -d
 
 A API ficará disponível em `http://localhost:9595`.
 
-O DynamoDB local é acessado em `http://localhost:4566` e o painel administrativo fica em `http://localhost:8001`.
+O Floci UI fica em `http://localhost:4500`, o DynamoDB local é acessado em `http://localhost:4566` e o painel administrativo fica em `http://localhost:8001`.
+
+> O projeto agora inclui a console web do Floci (baseada em `floci-io/floci-ui`) para inspecionar o runtime local e os serviços compatíveis com AWS.
 
 > O ambiente local usa um serviço compatível com LocalStack/Floci, com credenciais `test/test` e região `sa-east-1`.
 

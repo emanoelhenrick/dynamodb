@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dynamodb-app
+    ports:
+      - "9595:9595"
+    environment:
+      AWS_DYNAMODB_ENDPOINT: http://floci:4566
+      AWS_DYNAMODB_ACCESSKEY: test
+      AWS_DYNAMODB_SECRETKEY: test
+      AWS_REGION: sa-east-1
+      SPRING_PROFILES_ACTIVE: localstack
+    depends_on:
+      customer:
+        condition: service_healthy
+    networks:
+      - network
+
   customer:
     container_name: floci
     image: floci/floci:latest-aws # Substitua pela tag exata da imagem do Floci que você utiliza
